@@ -1,0 +1,72 @@
+def get_neighbors(state):
+    neighbors = []
+    state_list = list(state)
+    blank_idx = state_list.index('_')
+
+    moves = {
+        'up': -3,
+        'down': 3,
+        'left': -1,
+        'right': 1
+    }
+
+    for move, pos_shift in moves.items():
+        new_idx = blank_idx + pos_shift
+
+        if move == 'up' and blank_idx < 3:
+            continue
+        if move == 'down' and blank_idx > 5:
+            continue
+        if move == 'left' and blank_idx % 3 == 0:
+            continue
+        if move == 'right' and blank_idx % 3 == 2:
+            continue
+
+        new_state = state_list[:]
+        new_state[blank_idx], new_state[new_idx] = new_state[new_idx], new_state[blank_idx]
+        neighbors.append(tuple(new_state))
+
+    return neighbors
+
+def dfs_limited(current, goal, depth_limit, path, visited):
+    if current == goal:
+        return path
+    if depth_limit == 0:
+        return None
+    visited.add(current)
+
+    for neighbor in get_neighbors(current):
+        if neighbor not in visited:
+            result = dfs_limited(neighbor, goal, depth_limit - 1, path + [neighbor], visited)
+            if result is not None:
+                return result
+    visited.remove(current)
+    return None
+
+def iddfs(start, goal, max_depth=50):
+    start = tuple(start)
+    goal = tuple(goal)
+
+    for depth in range(max_depth + 1):
+        visited = set()
+        result = dfs_limited(start, goal, depth, [start], visited)
+        if result is not None:
+            return result
+    return None
+
+def print_state(state):
+    for i in range(0, 9, 3):
+        print(' '.join(str(x) for x in state[i:i+3]))
+    print()
+
+initial_state = list("2831647_5")
+goal_state = list("1238_4765")
+
+path = iddfs(initial_state, goal_state, max_depth=50)
+
+if path:
+    print(f"Solution found in {len(path)-1} moves:")
+    for step in path:
+        print_state(step)
+else:
+    print("No solution found up to max depth.")
