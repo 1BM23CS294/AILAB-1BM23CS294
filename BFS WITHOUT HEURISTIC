@@ -65,7 +65,8 @@ initial_state_input = input("Enter initial state (9 values, use _ for blank, spa
 goal_state_input = input("Enter goal state (9 values, use _ for blank, space separated): ").split()
 
 path = bfs(initial_state_input, goal_state_input)
-
+print("SAMIR CHAUDHARY");
+print("1BM23CS294");
 if path:
     print(f"Solution found in {len(path)-1} moves:")
     for step in path:
