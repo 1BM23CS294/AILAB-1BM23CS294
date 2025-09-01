@@ -1,0 +1,71 @@
+def get_neighbors(state):
+    neighbors = []
+    state_list = list(state)
+    blank_idx = state_list.index('_')
+
+    moves = {
+        'up': -3,
+        'down': 3,
+        'left': -1,
+        'right': 1
+    }
+
+    for move, pos_shift in moves.items():
+        new_idx = blank_idx + pos_shift
+
+        if move == 'up' and blank_idx < 3:
+            continue
+        if move == 'down' and blank_idx > 5:
+            continue
+        if move == 'left' and blank_idx % 3 == 0:
+            continue
+        if move == 'right' and blank_idx % 3 == 2:
+            continue
+
+        new_state = state_list[:]
+        new_state[blank_idx], new_state[new_idx] = new_state[new_idx], new_state[blank_idx]
+        neighbors.append(tuple(new_state))
+
+    return neighbors
+
+def dfs(start, goal, max_depth=50):
+    start = tuple(start)
+    goal = tuple(goal)
+
+    stack = [(start, [start])]
+    visited = set()
+
+    while stack:
+        current, path = stack.pop()
+
+        if current == goal:
+            return path
+
+        if current not in visited and len(path) <= max_depth:
+            visited.add(current)
+            for neighbor in reversed(get_neighbors(current)):
+                if neighbor not in visited:
+                    stack.append((neighbor, path + [neighbor]))
+
+    return None
+
+def print_state(state):
+    for i in range(0, 9, 3):
+        print(' '.join(str(x) for x in state[i:i+3]))
+    print()
+
+initial_state = list("2831647_5")
+goal_state = list("1238_4765")
+
+path = dfs(initial_state, goal_state)
+print("SAMIR CHAUDHARY");
+print("1BM23CS294");
+
+if path:
+    print(f"Solution found in {len(path)-1} moves:")
+    for step in path:
+        print_state(step)
+        
+else:
+    print("No solution found (or depth limit reached).")
+    
