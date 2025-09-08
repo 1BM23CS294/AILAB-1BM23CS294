@@ -1,72 +1,64 @@
+# Online Python compiler (interpreter) to run Python online.
+# Write Python 3 code in this online editor and run it.
+# Generate possible next states
 def get_neighbors(state):
     neighbors = []
-    state_list = list(state)
-    blank_idx = state_list.index('_')
+    blank = state.index(0)
+    x, y = divmod(blank, 3)
 
-    moves = {
-        'up': -3,
-        'down': 3,
-        'left': -1,
-        'right': 1
-    }
-
-    for move, pos_shift in moves.items():
-        new_idx = blank_idx + pos_shift
-
-        if move == 'up' and blank_idx < 3:
-            continue
-        if move == 'down' and blank_idx > 5:
-            continue
-        if move == 'left' and blank_idx % 3 == 0:
-            continue
-        if move == 'right' and blank_idx % 3 == 2:
-            continue
-
-        new_state = state_list[:]
-        new_state[blank_idx], new_state[new_idx] = new_state[new_idx], new_state[blank_idx]
-        neighbors.append(tuple(new_state))
-
+    moves = [(-1,0), (1,0), (0,-1), (0,1)]  # up, down, left, right
+    for dx, dy in moves:
+        nx, ny = x + dx, y + dy
+        if 0 <= nx < 3 and 0 <= ny < 3:
+            new_blank = nx*3 + ny
+            new_state = list(state)
+            new_state[blank], new_state[new_blank] = new_state[new_blank], new_state[blank]
+            neighbors.append(tuple(new_state))
     return neighbors
 
-def dfs_limited(current, goal, depth_limit, path, visited):
-    if current == goal:
+# Depth Limited Search (recursive)
+def depth_limited_search(state, goal, limit, path, visited):
+    if state == goal:
         return path
-    if depth_limit == 0:
+    if limit == 0:
         return None
-    visited.add(current)
 
-    for neighbor in get_neighbors(current):
+    visited.add(state)
+    for neighbor in get_neighbors(state):
         if neighbor not in visited:
-            result = dfs_limited(neighbor, goal, depth_limit - 1, path + [neighbor], visited)
+            result = depth_limited_search(neighbor, goal, limit - 1, path + [neighbor], visited)
             if result is not None:
                 return result
-    visited.remove(current)
     return None
 
-def iddfs(start, goal, max_depth=50):
-    start = tuple(start)
-    goal = tuple(goal)
-
-    for depth in range(max_depth + 1):
+# Iterative Deepening Search
+def iterative_deepening_search(initial, goal):
+    depth = 0
+    while True:
         visited = set()
-        result = dfs_limited(start, goal, depth, [start], visited)
+        result = depth_limited_search(initial, goal, depth, [initial], visited)
         if result is not None:
-            return result
-    return None
+            return result, depth
+        depth += 1
 
+# Print puzzle in 3x3 grid
 def print_state(state):
     for i in range(0, 9, 3):
-        print(' '.join(str(x) for x in state[i:i+3]))
+        print(state[i:i+3])
     print()
 
-initial_state = list("2831647_5")
-goal_state = list("1238_4765")
+# Main
+if __name__ == "__main__":
+    print("Enter initial state (9 numbers, use 0 for blank):")
+    initial = tuple(map(int, input().split()))
+    print("Enter goal state (9 numbers, use 0 for blank):")
+    goal = tuple(map(int, input().split()))
 
-path = iddfs(initial_state, goal_state, max_depth=50)
+    path, depth = iterative_deepening_search(initial, goal)
 
-if path:
-    print(f"Solution found in {len(path)-1} moves:")
+    print("\nSolution found at depth:", depth)
+    print("Number of moves:", len(path)-1)
+    print("\nSteps:")
     for step in path:
         print_state(step)
-else:
-    print("No solution found up to max depth.")
+print("SAMIR CHAUDHARY\n1BM23CS294")
