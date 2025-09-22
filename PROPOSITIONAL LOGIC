@@ -1,0 +1,50 @@
+from itertools import product
+
+def evaluate(expr, model):
+    if expr in model:
+        return model[expr]
+    elif "→" in expr:
+        p, q = expr.split("→")
+        return (not evaluate(p.strip(), model)) or evaluate(q.strip(), model)
+    elif "&" in expr:
+        p, q = expr.split("&")
+        return evaluate(p.strip(), model) and evaluate(q.strip(), model)
+    elif "|" in expr:
+        p, q = expr.split("|")
+        return evaluate(p.strip(), model) or evaluate(q.strip(), model)
+    elif "~" in expr:
+        return not evaluate(expr[1:].strip(), model)
+    else:
+        return False
+
+def print_custom_truth_table():
+    print("Name: SAMIR CHAUDHARY")
+    print("Roll No.: 1BM23CS294\n")
+    
+    symbols = ['A', 'B', 'C']
+    KB_expr = "A∨C & B∧~C"
+    query = "A∨C"  # α
+    header = symbols + ["A∨C", "B∧¬C", "KB", "α"]
+    
+    print(" | ".join(f"{h:>5}" for h in header))
+    print("-" * (7 * len(header)))
+    
+    entails = True
+    for values in product([True, False], repeat=len(symbols)):
+        model = dict(zip(symbols, values))
+        avc = evaluate("A|C", model)
+        bnc = evaluate("B&~C", model)
+        kb_val = avc and bnc
+        alpha_val = evaluate(query.replace("∨", "|").replace("∧", "&").replace("¬", "~"), model)
+        row = [model[s] for s in symbols] + [avc, bnc, kb_val, alpha_val]
+        print(" | ".join(f"{str(v):>5}" for v in row))
+        if kb_val and not alpha_val:
+            entails = False
+
+    print("\nResult:")
+    if entails:
+        print("Query is entailed by KB (KB ⊨ α).")
+    else:
+        print("Query is NOT entailed by KB.")
+
+print_custom_truth_table()
