@@ -1,0 +1,16 @@
+Name: SAMIR CHAUDHARY
+Roll No.: 1BM23CS294
+
+    A |     B |     C |   A∨C |  B∧¬C |    KB |     α
+-------------------------------------------------
+ True |  True |  True |  True | False | False |  True
+ True |  True | False |  True |  True |  True |  True
+ True | False |  True |  True | False | False |  True
+ True | False | False |  True | False | False |  True
+False |  True |  True |  True | False | False |  True
+False |  True | False | False |  True | False | False
+False | False |  True |  True | False | False |  True
+False | False | False | False | False | False | False
+
+Result:
+Query is entailed by KB (KB ⊨ α).
