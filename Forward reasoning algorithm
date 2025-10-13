@@ -19,19 +19,29 @@ def forward_chaining(KB, query):
                         agenda.append(KB['rules'][rule]['conclusion'])
     return False
 
+# Knowledge base facts and rules based on the problem
+
 KB = {
-    'symbols': ['P', 'Q', 'R', 'S', 'T'],
-    'facts': ['P', 'Q'],
+    'symbols': ['American(West)', 'Enemy(Nono)', 'Hostile(Nono)', 'Missiles(Nono)', 
+                'Sells(West, Missiles, Nono)', 'Crime(West)'],
+    'facts': [
+        'American(West)',
+        'Enemy(Nono)',
+        'Missiles(Nono)',
+        'Sells(West, Missiles, Nono)'
+    ],
     'rules': {
-        'rule1': {'premises': ['P', 'Q'], 'conclusion': 'R'},
-        'rule2': {'premises': ['R'], 'conclusion': 'S'},
-        'rule3': {'premises': ['S'], 'conclusion': 'T'}
+        # Enemy is hostile
+        'rule1': {'premises': ['Enemy(Nono)'], 'conclusion': 'Hostile(Nono)'},
+        
+        # Law: If American sells weapons to hostile nation, then criminal
+        'rule2': {'premises': ['American(West)', 'Hostile(Nono)', 'Sells(West, Missiles, Nono)'], 'conclusion': 'Crime(West)'}
     }
 }
 
-query = 'T'
+query = 'Crime(West)'
 
 if forward_chaining(KB, query):
-    print(f"{query} is entailed by the knowledge base.")
+    print("West is criminal.")
 else:
-    print(f"{query} is NOT entailed by the knowledge base.")
+    print("West is NOT criminal.")
