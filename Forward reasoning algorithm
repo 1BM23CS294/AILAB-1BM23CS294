@@ -1,0 +1,37 @@
+print("Name: Samir Chaudhary")
+print("USN: 1BM23CS294\n")
+
+def forward_chaining(KB, query):
+    inferred = {symbol: False for symbol in KB['symbols']}
+    agenda = list(KB['facts'])
+    count = {rule: len(KB['rules'][rule]['premises']) for rule in KB['rules']}
+    
+    while agenda:
+        p = agenda.pop(0)
+        if p == query:
+            return True
+        if not inferred[p]:
+            inferred[p] = True
+            for rule in KB['rules']:
+                if p in KB['rules'][rule]['premises']:
+                    count[rule] -= 1
+                    if count[rule] == 0:
+                        agenda.append(KB['rules'][rule]['conclusion'])
+    return False
+
+KB = {
+    'symbols': ['P', 'Q', 'R', 'S', 'T'],
+    'facts': ['P', 'Q'],
+    'rules': {
+        'rule1': {'premises': ['P', 'Q'], 'conclusion': 'R'},
+        'rule2': {'premises': ['R'], 'conclusion': 'S'},
+        'rule3': {'premises': ['S'], 'conclusion': 'T'}
+    }
+}
+
+query = 'T'
+
+if forward_chaining(KB, query):
+    print(f"{query} is entailed by the knowledge base.")
+else:
+    print(f"{query} is NOT entailed by the knowledge base.")
