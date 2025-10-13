@@ -1,6 +1,9 @@
 from collections import deque
 
+
+
 class Term:
+  
     def __init__(self, name, args=None):
         self.name = name
         self.args = args or []
@@ -101,6 +104,8 @@ def make_term(s):
 # Example terms that unify
 t1 = make_term("p(X, a)")
 t2 = make_term("p(b, Y)")
+print("Name: Samir Chaudhary")
+print("USN: 1BM23CS294\n")
 
 result = unify(t1, t2)
 
@@ -110,3 +115,5 @@ else:
     print("Terms are unifiable. Most General Unifier (MGU):")
     for var, val in result.items():
         print(f"{var} -> {val}")
+        
+
