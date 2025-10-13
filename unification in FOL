@@ -1,0 +1,112 @@
+from collections import deque
+
+class Term:
+    def __init__(self, name, args=None):
+        self.name = name
+        self.args = args or []
+
+    def is_variable(self):
+        # Variables: lowercase single letters or strings starting with lowercase letters without args
+        return self.args == [] and self.name.islower()
+
+    def is_constant(self):
+        # Constants: lowercase letters that are NOT variables (e.g., single lowercase letters but treated as constants)
+        # For simplicity, consider constants as names that are not variables or functions
+        return self.args == [] and not self.is_variable()
+
+    def __eq__(self, other):
+        if not isinstance(other, Term):
+            return False
+        return self.name == other.name and self.args == other.args
+
+    def __hash__(self):
+        return hash((self.name, tuple(self.args)))
+
+    def __repr__(self):
+        if self.args:
+            return f"{self.name}({', '.join(map(str, self.args))})"
+        else:
+            return self.name
+
+def occurs_check(var, term, subst):
+    if var == term:
+        return True
+    if term.is_variable() and term.name in subst:
+        return occurs_check(var, subst[term.name], subst)
+    if term.args:
+        return any(occurs_check(var, arg, subst) for arg in term.args)
+    return False
+
+def unify(t1, t2, subst=None):
+    if subst is None:
+        subst = {}
+
+    stack = deque([(t1, t2)])
+
+    while stack:
+        term1, term2 = stack.pop()
+
+        # Apply substitutions
+        while term1.is_variable() and term1.name in subst:
+            term1 = subst[term1.name]
+        while term2.is_variable() and term2.name in subst:
+            term2 = subst[term2.name]
+
+        if term1 == term2:
+            continue
+
+        if term1.is_variable():
+            if occurs_check(term1, term2, subst):
+                return None
+            subst[term1.name] = term2
+
+        elif term2.is_variable():
+            if occurs_check(term2, term1, subst):
+                return None
+            subst[term2.name] = term1
+
+        elif term1.name == term2.name and len(term1.args) == len(term2.args):
+            for a1, a2 in zip(term1.args, term2.args):
+                stack.append((a1, a2))
+        else:
+            # function names differ or different arity => cannot unify
+            return None
+
+    return subst
+
+def make_term(s):
+    s = s.strip()
+    if '(' not in s:
+        return Term(s)
+    i = s.index('(')
+    name = s[:i]
+    args_str = s[i+1:-1]
+    args = []
+    balance = 0
+    current = ''
+    for ch in args_str:
+        if ch == ',' and balance == 0:
+            args.append(make_term(current))
+            current = ''
+        else:
+            if ch == '(':
+                balance += 1
+            elif ch == ')':
+                balance -= 1
+            current += ch
+    if current:
+        args.append(make_term(current))
+    return Term(name, args)
+
+# Example terms that unify
+t1 = make_term("p(X, a)")
+t2 = make_term("p(b, Y)")
+
+result = unify(t1, t2)
+
+if result is None:
+    print("No unifier found for the given terms.")
+else:
+    print("Terms are unifiable. Most General Unifier (MGU):")
+    for var, val in result.items():
+        print(f"{var} -> {val}")
