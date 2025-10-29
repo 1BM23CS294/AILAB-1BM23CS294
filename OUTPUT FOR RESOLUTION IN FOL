@@ -1,0 +1,9 @@
+Resolution Process
+NAME: Samir Chaudhary
+USN: 1BM23CS294
+
+Resolving {'¬food(x)', 'likes(John,x)'} and {'food(Peanuts)'} → {'likes(John,Peanuts)'}
+Resolving {'killed(g)', 'alive(g)'} and {'¬alive(k)', '¬killed(k)'} → set()
+
+ Empty clause derived.
+Hence, the query is PROVED TRUE by Resolution.
