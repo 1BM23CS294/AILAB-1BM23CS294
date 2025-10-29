@@ -1,0 +1,8 @@
+Alpha–Beta Pruning Process
+NAME: Samir Chaudhary
+USN: 1BM23CS294
+
+Pruned at MAX node with α=6, β=5
+Pruned at MIN node with α=5, β=2
+
+Optimal value: 5
