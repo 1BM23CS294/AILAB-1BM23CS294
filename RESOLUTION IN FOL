@@ -1,0 +1,71 @@
+def unify(a, b):
+    if a == b:
+        return {}
+    if '(' in a and '(' in b:
+        if a.split('(')[0] == b.split('(')[0]:
+            a_args = a[a.find('(')+1:-1].split(',')
+            b_args = b[b.find('(')+1:-1].split(',')
+            return {a_args[0]: b_args[0]} if a_args[0].islower() else {}
+    return {}
+
+def substitute(clause, subs):
+    new_clause = set()
+    for lit in clause:
+        for var, val in subs.items():
+            lit = lit.replace(var, val)
+        new_clause.add(lit)
+    return new_clause
+
+def resolve(ci, cj):
+    resolvents = []
+    for di in ci:
+        for dj in cj:
+            if di.startswith("¬") and not dj.startswith("¬") and di[1:].split("(")[0] == dj.split("(")[0]:
+                subs = unify(di[1:], dj)
+            elif dj.startswith("¬") and not di.startswith("¬") and dj[1:].split("(")[0] == di.split("(")[0]:
+                subs = unify(dj[1:], di)
+            else:
+                continue
+            new_clause = substitute((ci - {di}) | (cj - {dj}), subs)
+            resolvents.append(new_clause)
+    return resolvents
+
+# Knowledge Base
+KB = [
+    {"¬food(x)", "likes(John,x)"},
+    {"food(Peanuts)"},
+    {"killed(g)", "alive(g)"},
+    {"¬alive(k)", "¬killed(k)"}
+]
+
+clauses = [set(c) for c in KB]
+new = set()
+
+print("Resolution Process")
+print("NAME: Samir Chaudhary")
+print("USN: 1BM23CS294\n")
+
+found = False
+while True:
+    for i in range(len(clauses)):
+        for j in range(i + 1, len(clauses)):
+            resolvents = resolve(clauses[i], clauses[j])
+            for res in resolvents:
+                print(f"Resolving {clauses[i]} and {clauses[j]} → {res}")
+                if not res:
+                    print("\n Empty clause derived.")
+                    print("Hence, the query is PROVED TRUE by Resolution.")
+                    found = True
+                    break
+            if found:
+                break
+        if found:
+            break
+    if found:
+        break
+    if new.issubset(set(map(frozenset, clauses))):
+        print("\nNo new clauses — cannot prove the query.")
+        break
+    for c in new:
+        if set(c) not in clauses:
+            clauses.append(set(c))
