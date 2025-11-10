@@ -1,0 +1,14 @@
+Enter start node (S): A
+Enter goal node (G): S
+
+Depth limit: 0
+A 
+Depth limit: 1
+A B C D 
+Depth limit: 2
+A B E F C G D H 
+Depth limit: 3
+A B E I F J K C G L D H M N 
+Depth limit: 4
+A B E I F J K O P C G L R D H M N S 
+Optimal path from A to S : ['A', 'D', 'H', 'N', 'S']
